@@ -1,0 +1,154 @@
+Time-Simple version 0.01
+========================
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+NAME
+    Time::Simple - a very simple time object
+
+SYNOPSIS
+            use Time::Simple;
+            my $time   = Time::Simple->new('23:24:59');
+            my $hour   = $time->hour;
+            my $minute = $time->minute;
+            my $second = $time->second;
+            my $time2  = Time::Simple->new($hour, $minute, $second);
+
+            my $now = Time::Simple->new;
+            my $nexthour = $now + 60;
+            print "An hour from now is $nexthour.\n";
+            if ($nexthour->hour > 23) {
+                    print "It'll be tomorrow within the next hour!\n";
+            }
+
+            # You can also do this:
+            ($time cmp "23:24:25")
+            # ...and this:
+            ($time <=> [23, 24, 25])
+
+DEPENDENCIES
+	Nothing outside of the core distribution.
+
+DESCRIPTION
+    This object represents a class for simple time objects, just as
+    "Date::Simple" represents a class for simple objects.
+
+    This module may be used to create simple time objects. It will only
+    allow the creation of objects for valid times. Attempting to create an
+    invalid date will return "undef" rather than an object.
+
+FATAL ERRORS
+    Some operations can produce fatal errors: these can be replaced by
+    warnings and the return of "undef" by switching the value of $FATALS:
+
+            $Time::Simple::FATALS = undef;
+
+    You will then only get warnings to "STDERR", and even then only if you
+    asked perl for warnings with "use warnings" or by setting $^W either
+    directly or with the "-w" command-line switch.
+
+  EXPORT
+    None by default.
+
+  CONSTRUCTOR (new)
+        my $time = Time::Simple->new('21:10:00');
+        my $othertime = Time::Simple->new(11, 10, 9);
+
+    The constructor "new" returns a "Time::Simple" object if the supplied
+    values specify a valid time, otherwise returns "undef".
+
+INSTANCE METHODS
+  METHOD next
+        my $will_be_by_one_second = $now->next;
+
+    Returns the next time by incrementing the caller's time by one second.
+
+  METHOD prev
+        my $was_by_one_second = $now->prev;
+
+    Returns the last time by decrementing the caller's time by one second.
+
+  METHOD hour
+        my $hr = $time->hour;
+
+    The hour. Alias: "hours".
+
+  METHOD minute
+        my $min = $time->minute;
+
+    The minutes. Alias: "minutes".
+
+  METHOD second
+        my $sec = $time->second;
+
+    The seconds. Alias: "seconds".
+
+  format
+    Returns a string representing the time, in the format specified. If you
+    don't pass a parameter, an ISO 8601 formatted time is returned.
+
+        $date->format;
+        $date->format("%H hours, %M minutes, and %S seconds");
+        $date->format("%H-%M-%S");
+
+    The formatting parameter is as you would pass to strftime(3): see
+    "strftime" in POSIX.
+
+OPERATORS
+    Some operators can be used with Time::Simple objects:
+
+    *   You can increment or decrement a time by a number of days using the
+        "+=" and "-=" operators
+
+    *   You can construct new times offset by a number of seconds using the
+        "+" and "-" operators.
+
+    *   You can subtract two times ("$t1 - $t2") to find the number of
+        seconds between them.
+
+    *   You can compare two times using the arithmetic and/or string
+        comparison operators.
+
+    *   You can interpolate a time instance directly into a string, in the
+        format specified by ISO 8601 (eg: 23:24:25).
+
+  DIAGNOSTICS
+    "Illegal octal digit ...."
+    You probably used an anonymous array and prefixed a number with a
+    leading zero, as you would if you supplied a scalar string:
+    "[11,10,09]".
+
+TODO
+    Suggestions welcome.
+
+SEE ALSO
+    Date::Simple, Time::HiRes, "localtime" in perlop, "time" in perlop.
+
+CREDITS
+    This module is a rewrite of Marty Pauley's excellent and very useful
+    "Date::Simple" object. If you're reading, Marty: many thanks.
+
+AUTHOR
+    Lee Goddard (lgoddard -at- cpan -dot- org) after Marty Pauley
+    <marty@kasei.com>
+
+COPYRIGHT AND LICENSE
+    Copyright (C) 2006 Lee Goddard. Parts Copyright (C) 2001, *Kasei*.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of either: a) the GNU General Public License; either
+    version 2 of the License, or (at your option) any later version. b) the
+    Perl Artistic License.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+

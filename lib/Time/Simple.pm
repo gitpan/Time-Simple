@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -83,21 +83,19 @@ sub new {
     my ($that, @hms) = (@_);
     my $class = ref($that) || $that;
     if (@hms == 1) {
-        my $x = $hms[0];
-        if(ref $x eq 'ARRAY') {
-            @hms = @$x;
-        } else {
-			@hms = $hms[0] =~ /^(\d{1,2})(:\d{1,2})?(:\d{1,2})?$/;
-			$hms[1] ||= '00';
-			$hms[2] ||= '00';
-			s/^:// foreach @hms[1..2];
-			if (not defined $hms[0]){
-				if ($FATALS){
-					croak"'$_[0]' is not a valid ISO formated time" ;
-				} else {
-					Carp::cluck("'$_[0]' is not a valid ISO formated time") if $^W;
-					return undef;
-				}
+        if(ref $hms[0] eq 'ARRAY') {
+            @hms = join':',@{$hms[0]};
+		}
+		@hms = $hms[0] =~ /^(\d{1,2})(:\d{1,2})?(:\d{1,2})?$/;
+		$hms[1] ||= '00';
+		$hms[2] ||= '00';
+		s/^:// foreach @hms[1..2];
+		if (not defined $hms[0]){
+			if ($FATALS){
+				croak"'$_[0]' is not a valid ISO formated time" ;
+			} else {
+				Carp::cluck("'$_[0]' is not a valid ISO formated time") if $^W;
+				return undef;
 			}
         }
     }

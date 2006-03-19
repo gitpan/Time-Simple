@@ -1,6 +1,6 @@
 our $VERSION = 0.1;
 
-use Test::More tests => 37;
+use Test::More tests => 45;
 
 BEGIN {
 	use lib '../lib'; # For when this script is run directly
@@ -43,9 +43,21 @@ is($ts->hour,23,'hr from scalar');
 is($ts->minute,59,'min from scalar');
 is($ts->second,0,'sec from scratch');
 
+$ts = Time::Simple->new([23,59]);
+isa_ok($ts, 'Time::Simple', 'New from array no seconds');
+is($ts->hour,23,'hr from scalar');
+is($ts->minute,59,'min from scalar');
+is($ts->second,0,'sec from scratch');
+
 $ts = Time::Simple->new('23');
 isa_ok($ts, 'Time::Simple', 'New from scalar no seconds');
 is($ts->hour,23,'hr from scalar');
+is($ts->minute,0,'min from scratch');
+is($ts->second,0,'sec from scratch');
+
+$ts = Time::Simple->new([23]);
+isa_ok($ts, 'Time::Simple', 'New from array no seconds');
+is($ts->hour,23,'hr from array');
 is($ts->minute,0,'min from scratch');
 is($ts->second,0,'sec from scratch');
 

@@ -1,5 +1,8 @@
 Revision history for Perl extension Time::Simple.
 
+0.02  Sun Mar 19 18:36:00 2006
+	- allow same defaulting for construction by array as for by string & updated tests
+
 0.01  Sat Mar 18 14:06:04 2006
 	- original version; created by h2xs 1.23 with options
 		-X -n Time::Simple

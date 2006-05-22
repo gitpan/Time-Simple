@@ -1,4 +1,4 @@
-Time-Simple version 0.01
+Time-Simple version 0.03
 ========================
 
 INSTALLATION
@@ -11,7 +11,7 @@ To install this module type the following:
    make install
 
 NAME
-    Time::Simple - a very simple time object
+    Time::Simple - a very light time object
 
 SYNOPSIS
             use Time::Simple;
@@ -33,16 +33,12 @@ SYNOPSIS
             # ...and this:
             ($time <=> [23, 24, 25])
 
-DEPENDENCIES
-	Nothing outside of the core distribution.
-
 DESCRIPTION
-    This object represents a class for simple time objects, just as
-    "Date::Simple" represents a class for simple objects.
+    This object represents a class for simple and light time objects, just
+    as "Date::Simple" represents a class for simple objects.
 
-    This module may be used to create simple time objects. It will only
-    allow the creation of objects for valid times. Attempting to create an
-    invalid date will return "undef" rather than an object.
+    Attempting to create an invalid time with this module will return
+    "undef" rather than an object.
 
 FATAL ERRORS
     Some operations can produce fatal errors: these can be replaced by
@@ -133,11 +129,12 @@ SEE ALSO
 
 CREDITS
     This module is a rewrite of Marty Pauley's excellent and very useful
-    "Date::Simple" object. If you're reading, Marty: many thanks.
+    "Date::Simple" object. If you're reading, Marty: many thanks. For
+    support, though, please contact Lee Goddard (lgoddard -at- cpan -dot-
+    org) or use rt.cpan.org.
 
 AUTHOR
-    Lee Goddard (lgoddard -at- cpan -dot- org) after Marty Pauley
-    <marty@kasei.com>
+    Lee Goddard (lgoddard -at- cpan -dot- org) after Marty Pauley.
 
 COPYRIGHT AND LICENSE
     Copyright (C) 2006 Lee Goddard. Parts Copyright (C) 2001, *Kasei*.

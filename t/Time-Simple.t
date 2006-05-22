@@ -5,7 +5,7 @@ use Test::More tests => 45;
 BEGIN {
 	use lib '../lib'; # For when this script is run directly
 	use Data::Dumper; # for debugging
-	use_ok('Time::Simple');
+	use_ok('Time::Simple' => 0.03);
 };
 
 

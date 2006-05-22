@@ -1,12 +1,12 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 our $FATALS  = 1;
 
 =head1 NAME
 
-Time::Simple - a very simple time object
+Time::Simple - a very light time object
 
 =head1 SYNOPSIS
 
@@ -31,12 +31,10 @@ Time::Simple - a very simple time object
 
 =head1 DESCRIPTION
 
-This object represents a class for simple time objects, just as C<Date::Simple>
-represents a class for simple objects.
+This object represents a class for simple and light time objects,
+just as C<Date::Simple> represents a class for simple objects.
 
-This module may be used to create simple time objects.
-It will only allow the creation of objects for valid times.
-Attempting to create an invalid date will return C<undef> rather than an object.
+Attempting to create an invalid time with this module  will return C<undef> rather than an object.
 
 =head1 FATAL ERRORS
 
@@ -128,7 +126,10 @@ sub _copy {
 sub _mkdatehms ($$$) {
     my ($h, $m, $s) = @_;
 	# mktime(sec, min, hour, mday, mon, year, wday = 0, yday = 0, isdst = 0)
-    my $d = mktime ($s, $m, $h, ((localtime)[3]), ((localtime)[4]), ((localtime)[5]));
+    my $d = mktime ($s, $m,
+    	$h - ((localtime)[8]),	# Daylight saving time
+    	((localtime)[3]), ((localtime)[4]), ((localtime)[5])
+    );
     confess 'Can\'t mktime'if not $d;
     return $d;
 }
@@ -301,11 +302,12 @@ L<Date::Simple>, L<Time::HiRes>, L<perlop/localtime>, L<perlop/time>.
 =head1 CREDITS
 
 This module is a rewrite of Marty Pauley's excellent and very useful C<Date::Simple>
-object. If you're reading, Marty: many thanks.
+object. If you're reading, Marty: many thanks. For support, though, please contact
+Lee Goddard (lgoddard -at- cpan -dot- org) or use rt.cpan.org.
 
 =head1 AUTHOR
 
-Lee Goddard (lgoddard -at- cpan -dot- org) after Marty Pauley E<lt>marty@kasei.comE<gt>
+Lee Goddard (lgoddard -at- cpan -dot- org) after Marty Pauley.
 
 =head1 COPYRIGHT AND LICENSE
 

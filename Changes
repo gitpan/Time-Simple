@@ -1,5 +1,8 @@
 Revision history for Perl extension Time::Simple.
 
+0.03  Tue 22 May 21:10 2006 
+ 	- daylight saving time accounted for, reported by Regály Zsolt
+
 0.02  Sun Mar 19 18:36:00 2006
 	- allow same defaulting for construction by array as for by string & updated tests
 

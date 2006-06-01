@@ -1,4 +1,4 @@
-Time-Simple version 0.03
+Time-Simple version 0.04
 ========================
 
 INSTALLATION
@@ -11,19 +11,21 @@ To install this module type the following:
    make install
 
 NAME
-    Time::Simple - a very light time object
+    Time::Simple - A simple, light-weight ISO 8601 time object.
 
 SYNOPSIS
             use Time::Simple;
             my $time   = Time::Simple->new('23:24:59');
-            my $hour   = $time->hour;
-            my $minute = $time->minute;
-            my $second = $time->second;
+            my $hour   = $time->hours;
+            my $minute = $time->minutes;
+            my $second = $time->seconds;
+
             my $time2  = Time::Simple->new($hour, $minute, $second);
 
             my $now = Time::Simple->new;
             my $nexthour = $now + 60;
             print "An hour from now is $nexthour.\n";
+
             if ($nexthour->hour > 23) {
                     print "It'll be tomorrow within the next hour!\n";
             }
@@ -33,14 +35,25 @@ SYNOPSIS
             # ...and this:
             ($time <=> [23, 24, 25])
 
-DESCRIPTION
-    This object represents a class for simple and light time objects, just
-    as "Date::Simple" represents a class for simple objects.
+            $time++; # Add a minute
+            $time--; # Subtract a minute
 
+            my $now  = Time::Simple->new;
+            # A minute from now:
+            my $then = Time::Simple->new( $now + 60 );
+            # Or:
+            my $soon = Time::Simple->new( '00:01:00' );
+
+DESCRIPTION
+    A simple, light-weight time object.
+
+    This version should be considered alpha: stable, but not yet thourghly
+    tested.
+
+FATAL ERRORS
     Attempting to create an invalid time with this module will return
     "undef" rather than an object.
 
-FATAL ERRORS
     Some operations can produce fatal errors: these can be replaced by
     warnings and the return of "undef" by switching the value of $FATALS:
 
@@ -54,11 +67,19 @@ FATAL ERRORS
     None by default.
 
   CONSTRUCTOR (new)
-        my $time = Time::Simple->new('21:10:00');
-        my $othertime = Time::Simple->new(11, 10, 9);
+        $_ = Time::Simple->new('21:10:09');
+        $_ = Time::Simple->new( 11,10, 9 );
+        $_ = Time::Simple->new( time() );
 
     The constructor "new" returns a "Time::Simple" object if the supplied
     values specify a valid time, otherwise returns "undef".
+
+    Valid times are either as supplied by the time, or in ISO 8601 format.
+    In the latter case, the values may be supplied as a colon-delimited
+    scalar, as a list, or as an anonymous array.
+
+    If nothing is supplied to the constructor, the current local time will
+    be used.
 
 INSTANCE METHODS
   METHOD next
@@ -94,23 +115,25 @@ INSTANCE METHODS
         $date->format("%H hours, %M minutes, and %S seconds");
         $date->format("%H-%M-%S");
 
-    The formatting parameter is as you would pass to strftime(3): see
-    "strftime" in POSIX.
+    The formatting parameter is as you would pass to strftime(3): "strftime"
+    in POSIX.
 
 OPERATORS
-    Some operators can be used with Time::Simple objects:
+    Some operators can be used with "Time::Simple" objects:
 
-    *   You can increment or decrement a time by a number of days using the
-        "+=" and "-=" operators
+    += -=
+        You can increment or decrement a time by a number of seconds using
+        the "+=" and "-=" operators
 
-    *   You can construct new times offset by a number of seconds using the
+    + - You can construct new times offset by a number of seconds using the
         "+" and "-" operators.
 
-    *   You can subtract two times ("$t1 - $t2") to find the number of
+    -   You can subtract two times ("$t1 - $t2") to find the number of
         seconds between them.
 
-    *   You can compare two times using the arithmetic and/or string
-        comparison operators.
+    comparison
+        You can compare two times using the arithmetic and/or string
+        comparison operators: "lt le ge gt < <= >= >".
 
     *   You can interpolate a time instance directly into a string, in the
         format specified by ISO 8601 (eg: 23:24:25).
@@ -122,16 +145,20 @@ OPERATORS
     "[11,10,09]".
 
 TODO
-    Suggestions welcome.
+    Suggestions welcome. How should operators not mentioend behave? Can one
+    "verbar" times?
 
 SEE ALSO
-    Date::Simple, Time::HiRes, "localtime" in perlop, "time" in perlop.
+    Time::HiRes, Date::Time, Date::Simple, "localtime" in perlfunc, "time"
+    in perlfunc. "strftime" in POSIX, "mktime" in POSIX.
 
 CREDITS
     This module is a rewrite of Marty Pauley's excellent and very useful
     "Date::Simple" object. If you're reading, Marty: many thanks. For
     support, though, please contact Lee Goddard (lgoddard -at- cpan -dot-
     org) or use rt.cpan.org.
+
+    Thanks to Zsolt for testing.
 
 AUTHOR
     Lee Goddard (lgoddard -at- cpan -dot- org) after Marty Pauley.

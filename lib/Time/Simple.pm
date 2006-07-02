@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.05';
+our $VERSION = '0.051';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -44,7 +44,10 @@ Time::Simple - A simple, light-weight ISO 8601 time object.
 
 A simple, light-weight time object.
 
-This version should be considered alpha: stable, but not yet thourghly tested.
+B<This version should be considered an alpha developer release>.
+
+How do you think this moudle should handle return values of multiplacation, where the
+return value would be greater than 23:59:59?
 
 =head1 FATAL ERRORS
 
@@ -192,6 +195,13 @@ sub _mktime_seconds($) {
 	return $h, $m, $s;
 }
 
+# Return the number of seoncds in time
+sub total_seconds($){
+	my $self = shift;
+	my ($sh, $sm, $ss) = $self =~ /^0?(\d+?).0?(\d+?).0?(\d+?)$/;
+    $ss += ($sm * 60) + ($sh * 60 * 60);
+}
+
 sub hour    { return (localtime ${$_[0]})[2] }
 sub hours   { return (localtime ${$_[0]})[2] }
 
@@ -315,8 +325,7 @@ sub _multiply {
 	}
 
 	# Convert time to seconds
-	my ($sh, $sm, $ss) = $self =~ /^0?(\d+?).0?(\d+?).0?(\d+?)$/;
-    $ss += ($sm * 60) + ($sh * 60 * 60);
+	my $ss = $self->total_seconds;
 	$ss *= $n;
 	my @hms = _mktime_seconds($ss);
 	return Time::Simple->new( @hms );
@@ -330,8 +339,7 @@ sub _divide {
 	}
 
 	# Convert time to seconds
-	my ($sh, $sm, $ss) = $self =~ /^0?(\d+?).0?(\d+?).0?(\d+?)$/;
-    $ss += ($sm * 60) + ($sh * 60 * 60);
+	my $ss = $self->total_seconds;
 	my $return = $ss /= $n;
 
 	# Convert return value to time

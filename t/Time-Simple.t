@@ -1,6 +1,6 @@
 our $VERSION = 0.3			;
 
-use Test::More tests => 85;
+use Test::More tests => 87;
 
 BEGIN {
 	use lib '../lib'; # For when this script is run directly
@@ -176,7 +176,16 @@ is($prevhour, '23:59:59', '-scalar');
 	is( $thirty, $hr/2, '*/ returns');
 }
 
-
+{
+	# Test for BBC::SMSvisual::Imager::Rader
+	my $t = Time::Simple->new("10:44:50");
+	ok( $t * 1);
+	TODO: {
+		local $TODO = "How to handle values > 24 hrs?";
+		eval {$t * 10};
+		ok( !$@ );
+	}
+}
 
 
 

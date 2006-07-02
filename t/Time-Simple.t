@@ -1,6 +1,6 @@
 our $VERSION = 0.3			;
 
-use Test::More tests => 82;
+use Test::More tests => 85;
 
 BEGIN {
 	use lib '../lib'; # For when this script is run directly
@@ -9,6 +9,7 @@ BEGIN {
 
 use strict;
 use warnings;
+use ExtUtils::testlib;
 
 my $ts = Time::Simple->new;
 isa_ok($ts, 'Time::Simple');
@@ -166,3 +167,21 @@ is($prevhour, '23:59:59', '-scalar');
 	isa_ok($then, 'Time::Simple');
 	is( $$now-60, $$then, 'Subt objs');
 }
+
+{
+	my $thirty  = Time::Simple->new('00:00:30');
+	is ($thirty * 2, '00:01:00', '*');
+	my $hr = Time::Simple->new('00:01:00');
+	is ($hr / 2, '00:00:30', '/');
+	is( $thirty, $hr/2, '*/ returns');
+}
+
+
+
+
+
+
+
+
+
+

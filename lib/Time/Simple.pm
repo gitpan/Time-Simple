@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -80,7 +80,11 @@ use overload
     '-'   => '_subtract',
     '<=>' => '_compare',
     'cmp' => '_compare',
-    '""'  => '_stringify';
+    '""'  => '_stringify',
+    '*'	  => '_multiply',
+    '/'   => '_divide',
+    # fallback=>1
+;
 
 =head2 CONSTRUCTOR (new)
 
@@ -101,13 +105,15 @@ If nothing is supplied to the constructor, the current local time will be used.
 
 sub new {
     my ($that, @hms) = (@_);
+    my $time;
+
     my $class = ref($that) || $that;
     if (@hms == 1) {
         if(ref $hms[0] eq 'ARRAY') {
             @hms = join':',@{$hms[0]};
 		}
 		# From "time"
-		elsif ($hms[0] =~ /^[^:]{10}$/g){
+		elsif ($hms[0] =~ /^\d{10}$/g){
 			Carp::confess;
 			my $hms = $hms[0];
 			my $h = (localtime $hms)[2];
@@ -128,25 +134,46 @@ sub new {
 			}
         }
     }
-    my $time;
-    if (@hms == 3) {
-        return undef unless validate(@hms);
-        $time = _mkdatehms(@hms);
-    } elsif (@hms == 0) {
-        $time = time;
-    } elsif ($FATALS){
-        croak "please read the documentation";
-	} else {
-        Carp::cluck("please read the documentation") if $^W;
-		return undef;
-    }
+    # From time()
+    elsif (scalar(@hms) == 10 or scalar(@hms) == 9) {
+		$time = join'',@hms;
+		if ($time =~ /\D/g){
+			if ($FATALS){
+				croak "Could not make a time from $time - please read the documentation";
+			} else {
+				Carp::cluck("Could not make a time from $time - please read the documentation") if $^W;
+				return undef;
+			}
+		}
+	}
+
+	if (not defined $time){
+		if (@hms == 3) {
+			unless (validate(@hms)){
+				if ($FATALS){
+					croak "Could not make a time - please read the documentation";
+				} else {
+					Carp::cluck("Could not make a time - please read the documentation") if $^W;
+					return undef;
+				}
+			}
+			$time = _mktime_hms(@hms);
+		} elsif (@hms == 0) {
+			$time = time;
+		} elsif ($FATALS){
+			croak "Could not make a time - please read the documentation";
+		} else {
+			Carp::cluck("Could not make a time - please read the documentation") if $^W;
+			return undef;
+		}
+	}
     return bless \$time, $class;
 }
 
 sub next { return $_[0] + 1 }
 sub prev { return $_[0] - 1 }
 
-sub _mkdatehms ($$$) {
+sub _mktime_hms ($$$) {
     my ($h, $m, $s) = @_;
 	# mktime(sec, min, hour, mday, mon, year, wday = 0, yday = 0, isdst = 0)
     my $d = mktime ($s, $m,
@@ -155,6 +182,14 @@ sub _mkdatehms ($$$) {
     );
     confess 'Can\'t mktime'if not $d;
     return $d;
+}
+
+sub _mktime_seconds($) {
+	my $t = shift;
+	my $h = int( $t / (60*60));
+	my $m = int(($t % (60*60)) / 60);
+	my $s = int( $t % (60));
+	return $h, $m, $s;
 }
 
 sub hour    { return (localtime ${$_[0]})[2] }
@@ -170,7 +205,10 @@ sub format {
     my $self = shift;
     my $format = shift || '%H:%M:%S';
 	# strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)
-    my $return = eval {strftime $format, localtime $$self;};
+    my $test;
+    eval { $test = scalar localtime $$self };
+    Carp::confess("Invalid time ($$self)") unless defined $test;
+    my $return = eval {strftime($format, localtime($$self));};
     Carp::confess "You supplied $$self: ".$@ if $@;
     return $return;
 }
@@ -267,6 +305,40 @@ sub _compare {
     return $reverse ? -$c : $c;
 }
 
+
+
+sub _multiply {
+    my ($self, $n, $reverse) = @_;
+
+    if (UNIVERSAL::isa($n, 'Time::Simple')) {
+		Carp::cluck "Cannot multiply a time by a time, only a time by a number.";
+	}
+
+	# Convert time to seconds
+	my ($sh, $sm, $ss) = $self =~ /^0?(\d+?).0?(\d+?).0?(\d+?)$/;
+    $ss += ($sm * 60) + ($sh * 60 * 60);
+	$ss *= $n;
+	my @hms = _mktime_seconds($ss);
+	return Time::Simple->new( @hms );
+}
+
+sub _divide {
+    my ($self, $n, $reverse) = @_;
+
+    if (UNIVERSAL::isa($n, 'Time::Simple')) {
+		Carp::cluck "Cannot multiply a time by a time, only a time by a number.";
+	}
+
+	# Convert time to seconds
+	my ($sh, $sm, $ss) = $self =~ /^0?(\d+?).0?(\d+?).0?(\d+?)$/;
+    $ss += ($sm * 60) + ($sh * 60 * 60);
+	my $return = $ss /= $n;
+
+	# Convert return value to time
+	my @hms = _mktime_seconds($return);
+	return Time::Simple->new( @hms );
+}
+
 1;
 
 __END__
@@ -341,10 +413,19 @@ You can subtract two times (C<$t1 - $t2>) to find the number of seconds between 
 You can compare two times using the arithmetic and/or string comparison operators:
 C<lt le ge gt E<lt> E<lt>= E<gt>= E<gt>>.
 
-=item *
+=item ""
 
 You can interpolate a time instance directly into a string, in the format
 specified by ISO 8601 (eg: 23:24:25).
+
+=item *
+
+You can multiply a time by a number: C<00:00:30 * 2 = 00:01:00>.
+
+=item /
+
+You can divide a time by a number: C<00:02:00 * 2 = 00:01:00>.
+
 
 =back
 
@@ -366,6 +447,10 @@ L<Date::Simple>,
 L<perlfunc/localtime>,
 L<perlfunc/time>.
 L<POSIX/strftime>, L<POSIX/mktime>.
+
+=head1 LATEST CHANGES
+
+Version 0.05 Sun 02 July 16:52 2006 - Added multiply and division
 
 =head1 CREDITS
 

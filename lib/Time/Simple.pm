@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.051';
+our $VERSION = '0.052';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -31,8 +31,12 @@ Time::Simple - A simple, light-weight ISO 8601 time object.
 	# ...and this:
 	($time <=> [23, 24, 25])
 
-	$time++; # Add a minute
-	$time--; # Subtract a minute
+	$time++; # Add a second
+	$time--; # Subtract a second
+
+	# Seconds of difference:
+	$seconds = Time::Simple->new("00:00:02")
+	         - Time::Simple->new("00:00:01");
 
 	my $now  = Time::Simple->new;
 	# A minute from now:
@@ -297,9 +301,11 @@ sub _add {
 sub _subtract {
     my ($self, $n, $reverse) = @_;
     if (UNIVERSAL::isa($n, 'Time::Simple')) {
-        my $diff = $$self - $$n;
+        my $copy = $self->_copy;
+        my $diff = $$copy - $$n;
         # $diff /= 86400;
         # $reverse should probably always be false here, but...
+		$diff = -$diff if $diff < 0;
         return $reverse ? -$diff : $diff;
     } else {
         my $copy = $self->_copy;

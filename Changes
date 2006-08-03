@@ -1,9 +1,13 @@
 Revision history for Perl extension Time::Simple.
 
-0.05 Sun 02 July 16:52 2006
+0.052 Thu 03 Aug 12:26:00 2006 
+	- Subtraction returned negative values: no longer.
+	- Updated POD and test
+
+0.05 Sun 02 Jul 16:52:00 2006
 	- Added multiply and division 
 
-0.04  Thu 24 May 21:00 2006 
+0.04  Thu 24 May 21:00:00 2006 
 	- overloaded the = copy operator
 	- POD correction, removed reference to dates
  	- addition/substraction properly implimented (kuszi zsolt)
@@ -11,7 +15,7 @@ Revision history for Perl extension Time::Simple.
 	- allow add/subtract times
 	- construct from return value of built-in "time" function
 
-0.03  Tue 22 May 21:10 2006 
+0.03  Tue 22 May 21:10:00 2006 
  	- daylight saving time accounted for, reported by Regály Zsolt
 
 0.02  Sun Mar 19 18:36:00 2006

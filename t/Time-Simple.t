@@ -1,10 +1,10 @@
 our $VERSION = 0.3			;
 
-use Test::More tests => 87;
+use Test::More tests => 94;
 
 BEGIN {
 	use lib '../lib'; # For when this script is run directly
-	use_ok('Time::Simple' => 0.04);
+	use_ok('Time::Simple' => "0.052");
 };
 
 use strict;
@@ -152,20 +152,20 @@ is($nexthour, '00:01:00', '+scalar');
 
 my $prevhour = $now - 1;
 isa_ok($prevhour, 'Time::Simple');
-is($prevhour, '23:59:59', '-scalar');
+is($prevhour, '23:59:59', '-1 scalar');
 
 {
 	my $now  = Time::Simple->new;
 	my $then = Time::Simple->new( $now + 60 );
 	isa_ok($then, 'Time::Simple');
-	is( $$now+60, $$then, 'Add objs');
+	is( $$now+60, $$then, 'Add scalar');
 }
 
 {
 	my $now  = Time::Simple->new;
 	my $then = Time::Simple->new( $now - 60 );
 	isa_ok($then, 'Time::Simple');
-	is( $$now-60, $$then, 'Subt objs');
+	is( $$now-60, $$then, 'Subtract scalar');
 }
 
 {
@@ -182,13 +182,36 @@ is($prevhour, '23:59:59', '-scalar');
 	ok( $t * 1);
 	TODO: {
 		local $TODO = "How to handle values > 24 hrs?";
-		eval {$t * 10};
+		eval {$_ = $t * 10};
 		ok( !$@ );
 	}
 }
 
 
+# From BBC::SMSvisual::Imager::RadarGD
+{
+	my $max = Time::Simple->new( "00:00:02" );
+	isa_ok($max, 'Time::Simple', $max);
+	my $t = Time::Simple->new( "00:00:01" );
+	isa_ok($t, 'Time::Simple', $t);
+	my $a = $max - $t;
+	is( $a, 1, "Leaves one");
+}
 
+is(
+	Time::Simple->new("00:00:02") - Time::Simple->new("00:00:01"),
+	1, 'Time minus'
+);
+
+
+# From BBC::SMSvisual::Imager::RadarGD
+{
+	my $max = Time::Simple->new( "18:18:31" );
+	isa_ok($max, 'Time::Simple', $max);
+	my $t = Time::Simple->new( "20:48:00" );
+	isa_ok($t, 'Time::Simple', $t);
+	is($max - $t, $t - $max, 'Always positive');
+}
 
 
 

@@ -1,6 +1,6 @@
 our $VERSION = 0.3			;
 
-use Test::More tests => 94;
+use Test::More tests => 96;
 
 BEGIN {
 	use lib '../lib'; # For when this script is run directly
@@ -211,6 +211,14 @@ is(
 	my $t = Time::Simple->new( "20:48:00" );
 	isa_ok($t, 'Time::Simple', $t);
 	is($max - $t, $t - $max, 'Always positive');
+}
+
+FROM_AGENT: {
+    eval {
+        Time::Simple->new('abc');
+    };
+    ok $@, 'invalid time detected';
+    like $@, qr/'abc' is not a valid ISO 8601 formated time/, 'message ok';
 }
 
 

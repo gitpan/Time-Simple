@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.052';
+our $VERSION = '0.053';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -134,9 +134,9 @@ sub new {
 		s/^:// foreach @hms[1..2];
 		if (not defined $hms[0]){
 			if ($FATALS){
-				croak"'$_[0]' is not a valid ISO 8601 formated time" ;
+				croak"'$_[1]' is not a valid ISO 8601 formated time" ;
 			} else {
-				Carp::cluck("'$_[0]' is not a valid ISO 8601 formated time") if $^W;
+				Carp::cluck("'$_[1]' is not a valid ISO 8601 formated time") if $^W;
 				return undef;
 			}
         }
@@ -472,7 +472,7 @@ This module is a rewrite of Marty Pauley's excellent and very useful C<Date::Sim
 object. If you're reading, Marty: many thanks. For support, though, please contact
 Lee Goddard (lgoddard -at- cpan -dot- org) or use rt.cpan.org.
 
-Thanks to Zsolt for testing.
+Thanks to Zsolt for testing, and 'Agent' for the patch.
 
 =head1 AUTHOR
 

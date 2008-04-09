@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Time-Simple
-version:             0.053
+version:             0.054
 abstract:            A simple, light-weight ISO 8601 time object.
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.3201

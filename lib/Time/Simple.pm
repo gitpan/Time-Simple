@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.053';
+our $VERSION = '0.054';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -115,18 +115,25 @@ sub new {
     my $time;
 
     my $class = ref($that) || $that;
-    if (@hms == 1) {
+
+	# From time()
+	if (scalar(@hms) and
+		($hms[0] =~ /^\d{10}$/g or scalar(@hms) == 10 or scalar(@hms) == 9)
+	) {
+		$time = join'',@hms;
+		if ($time =~ /\D/g){
+			if ($FATALS){
+				croak "Could not make a time from $time - please read the documentation";
+			} else {
+				Carp::cluck("Could not make a time from $time - please read the documentation") if $^W;
+				return undef;
+			}
+		}
+	}
+
+	elsif (@hms == 1) {
         if(ref $hms[0] eq 'ARRAY') {
             @hms = join':',@{$hms[0]};
-		}
-		# From "time"
-		elsif ($hms[0] =~ /^\d{10}$/g){
-			Carp::confess;
-			my $hms = $hms[0];
-			my $h = (localtime $hms)[2];
-			my $m = (localtime $hms)[1];
-			my $s = (localtime $hms)[0];
-			@hms = ($h, $m, $s);
 		}
 		@hms = $hms[0] =~ /^(\d{1,2})(:\d{1,2})?(:\d{1,2})?$/;
 		$hms[1] ||= '00';
@@ -141,18 +148,6 @@ sub new {
 			}
         }
     }
-    # From time()
-    elsif (scalar(@hms) == 10 or scalar(@hms) == 9) {
-		$time = join'',@hms;
-		if ($time =~ /\D/g){
-			if ($FATALS){
-				croak "Could not make a time from $time - please read the documentation";
-			} else {
-				Carp::cluck("Could not make a time from $time - please read the documentation") if $^W;
-				return undef;
-			}
-		}
-	}
 
 	if (not defined $time){
 		if (@hms == 3) {
@@ -183,11 +178,16 @@ sub prev { return $_[0] - 1 }
 sub _mktime_hms ($$$) {
     my ($h, $m, $s) = @_;
 	# mktime(sec, min, hour, mday, mon, year, wday = 0, yday = 0, isdst = 0)
-    my $d = mktime ($s, $m,
-    	$h - ((localtime)[8]),	# Daylight saving time
-    	((localtime)[3]), ((localtime)[4]), ((localtime)[5])
+	my @localtime = localtime;
+    my $d = mktime (
+		$s,
+		$m,
+    	$h - ($localtime[8]? 1 : 0),	# Daylight saving time
+    	$localtime[3],
+    	$localtime[4],
+    	$localtime[5]
     );
-    confess 'Can\'t mktime'if not $d;
+    confess 'Can not mktime' if not $d;
     return $d;
 }
 

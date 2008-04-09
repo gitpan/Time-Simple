@@ -1,15 +1,13 @@
-our $VERSION = 0.3			;
-
-use Test::More tests => 96;
-
-BEGIN {
-	use lib '../lib'; # For when this script is run directly
-	use_ok('Time::Simple' => "0.052");
-};
-
 use strict;
 use warnings;
 use ExtUtils::testlib;
+use Test::More tests => 99;
+
+our $VERSION = 0.4;
+
+use lib '../lib'; # For when this script is run directly
+
+use_ok('Time::Simple' => "0.054") or BAIL_OUT;
 
 my $ts = Time::Simple->new;
 isa_ok($ts, 'Time::Simple');
@@ -179,11 +177,12 @@ is($prevhour, '23:59:59', '-1 scalar');
 {
 	# Test for BBC::SMSvisual::Imager::Rader
 	my $t = Time::Simple->new("10:44:50");
-	ok( $t * 1);
+	ok( $t * 1, "$t * 1");
 	TODO: {
-		local $TODO = "How to handle values > 24 hrs?";
+		local $TODO = "How to handle values > 24 hrs? Fatal?";
 		eval {$_ = $t * 10};
-		ok( !$@ );
+		diag "GOT $@";
+		ok( !$@, "no error after $t * 10" );
 	}
 }
 
@@ -222,6 +221,13 @@ FROM_AGENT: {
 }
 
 
+FROM_TIME: {
+	my $ts1 = Time::Simple->new();
+	isa_ok($ts1, 'Time::Simple', 'blank');
 
+	my $ts2 = Time::Simple->new( time );
+	isa_ok($ts2, 'Time::Simple', 'from time');
 
+	is( $ts1, $ts2, 'new(time) is as default new()' );
+}
 

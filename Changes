@@ -1,5 +1,14 @@
 Revision history for Perl extension Time::Simple.
 
+0.054 Wed 09 Apr 10:22:00 2008 
+	- Removed a hidden 'confess' and allowed new from time()
+	- _mktime_hms now access localtime just once, in case
+	  the time changes between accesses (spotted by Slaven)
+	- ($localtime[8]? 1 : 0) instead of assuming that 'true' 
+	  is 1 (cf. perlfunc/localtime)
+	
+0.053 ?
+
 0.052 Thu 03 Aug 12:26:00 2006 
 	- Subtraction returned negative values: no longer.
 	- Updated POD and test

@@ -1,13 +1,13 @@
 use strict;
 use warnings;
 use ExtUtils::testlib;
-use Test::More tests => 99;
+use Test::More tests => 100;
 
-our $VERSION = 0.4;
+our $VERSION = 0.5;
 
 use lib '../lib'; # For when this script is run directly
 
-use_ok('Time::Simple' => "0.054") or BAIL_OUT;
+use_ok('Time::Simple' => "0.055") or BAIL_OUT;
 
 my $ts = Time::Simple->new;
 isa_ok($ts, 'Time::Simple');
@@ -230,4 +230,10 @@ FROM_TIME: {
 
 	is( $ts1, $ts2, 'new(time) is as default new()' );
 }
+
+is(
+	Time::Simple->new(),
+	Time::Simple->new( time() ),
+	'quick enough?'
+);
 

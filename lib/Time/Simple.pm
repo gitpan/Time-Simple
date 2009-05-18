@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.054';
+our $VERSION = '0.055';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -19,7 +19,7 @@ Time::Simple - A simple, light-weight ISO 8601 time object.
 	my $time2  = Time::Simple->new($hour, $minute, $second);
 
 	my $now = Time::Simple->new;
-	my $nexthour = $now + 60;
+	my $nexthour = $now + (60*60);
 	print "An hour from now is $nexthour.\n";
 
 	if ($nexthour->hour > 23) {
@@ -93,11 +93,18 @@ use overload
     # fallback=>1
 ;
 
+# http://rt.cpan.org/Public/Bug/Display.html?id=34710 :-
+# 	Log: Make the isdst argument to asctime and mktime default to -1
+# 	instead of 0, as suggested by Mike Schilli.
+# 	Branch: perl
+# 	! ext/POSIX/POSIX.pm ext/POSIX/POSIX.pod ext/POSIX/POSIX.xs
+my $DST = $^V lt v5.10.0? 0 : 0;
+
 =head2 CONSTRUCTOR (new)
 
     $_ = Time::Simple->new('21:10:09');
     $_ = Time::Simple->new( 11,10, 9 );
-    $_ = Time::Simple->new( time() );
+    Time::Simple->new() == Time::Simple->new( time() );
 
 The constructor C<new> returns a C<Time::Simple> object if the supplied
 values specify a valid time, otherwise returns C<undef>.
@@ -159,12 +166,31 @@ sub new {
 					return undef;
 				}
 			}
-			$time = _mktime_hms(@hms);
-		} elsif (@hms == 0) {
+
+			# mktime(sec, min, hour, mday, mon, year, wday = 0, yday = 0, isdst = 0/-1)
+			my @localtime = localtime;
+			$time = mktime (
+				$hms[2],
+				$hms[1],
+				$hms[0]   - ($localtime[8]? 1 : 0),	# Daylight saving time xxx
+				$localtime[3],
+				$localtime[4],
+				$localtime[5],
+				0,0,
+				$localtime[8]? $DST : 0
+			);
+			confess 'Can not mktime' if not $time;
+		}
+
+		elsif (@hms == 0) {
 			$time = time;
-		} elsif ($FATALS){
+		}
+
+		elsif ($FATALS){
 			croak "Could not make a time - please read the documentation";
-		} else {
+		}
+
+		else {
 			Carp::cluck("Could not make a time - please read the documentation") if $^W;
 			return undef;
 		}
@@ -174,22 +200,6 @@ sub new {
 
 sub next { return $_[0] + 1 }
 sub prev { return $_[0] - 1 }
-
-sub _mktime_hms ($$$) {
-    my ($h, $m, $s) = @_;
-	# mktime(sec, min, hour, mday, mon, year, wday = 0, yday = 0, isdst = 0)
-	my @localtime = localtime;
-    my $d = mktime (
-		$s,
-		$m,
-    	$h - ($localtime[8]? 1 : 0),	# Daylight saving time
-    	$localtime[3],
-    	$localtime[4],
-    	$localtime[5]
-    );
-    confess 'Can not mktime' if not $d;
-    return $d;
-}
 
 sub _mktime_seconds($) {
 	my $t = shift;

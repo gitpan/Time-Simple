@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.055';
+our $VERSION = '0.0551';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -53,7 +53,7 @@ B<This version should be considered an alpha developer release>.
 How do you think this moudle should handle return values of multiplacation, where the
 return value would be greater than 23:59:59?
 
-=head1 FATAL ERRORS
+=head2 FATAL ERRORS
 
 Attempting to create an invalid time with this module will return C<undef> rather than an object.
 
@@ -92,6 +92,10 @@ use overload
     '/'   => '_divide',
     # fallback=>1
 ;
+
+=head1 METHODS
+
+=cut
 
 # http://rt.cpan.org/Public/Bug/Display.html?id=34710 :-
 # 	Log: Make the isdst argument to asctime and mktime default to -1

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Time-Simple
-version:            0.055
+version:            0.0551
 abstract:           A simple, light-weight ISO 8601 time object.
 author:
     - Lee Goddard <lgoddard-at-cpan-dot-org>
@@ -13,7 +13,7 @@ no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.4801
+generated_by:       ExtUtils::MakeMaker version 6.48
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4

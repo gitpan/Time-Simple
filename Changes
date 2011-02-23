@@ -1,5 +1,8 @@
 Revision history for Perl extension Time::Simple.
 
+0.055 - 0.0552 February 2011
+	- Tests updated for CPAN Testers
+
 0.054 Wed 09 Apr 10:22:00 2008 
 	- Removed a hidden 'confess' and allowed new from time()
 	- _mktime_hms now access localtime just once, in case
@@ -25,7 +28,7 @@ Revision history for Perl extension Time::Simple.
 	- construct from return value of built-in "time" function
 
 0.03  Tue 22 May 21:10:00 2006 
- 	- daylight saving time accounted for, reported by Regály Zsolt
+ 	- daylight saving time accounted for, reported by Regï¿½ly Zsolt
 
 0.02  Sun Mar 19 18:36:00 2006
 	- allow same defaulting for construction by array as for by string & updated tests

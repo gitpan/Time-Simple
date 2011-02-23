@@ -150,7 +150,7 @@ is($nexthour, '00:01:00', '+scalar');
 
 my $prevhour = $now - 1;
 isa_ok($prevhour, 'Time::Simple');
-is($prevhour, '23:59:59', '-1 scalar');
+is("$prevhour", '23:59:59', '-1 scalar');
 
 {
 	my $now  = Time::Simple->new;

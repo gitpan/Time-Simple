@@ -1,7 +1,7 @@
 package Time::Simple;
 
 use 5.008003;
-our $VERSION = '0.0551';
+our $VERSION = '0.06';
 our $FATALS  = 1;
 
 =head1 NAME
@@ -269,7 +269,7 @@ sub _copy {
 
 sub _increment {
     my ($self, $n) = @_;
-    if (UNIVERSAL::isa($n, 'Time::Simple')) {
+    if (UNIVERSAL::isa($n, ref($self))) {
 		$n = $$n;
 	}
 	my $copy = $self->_copy;
@@ -279,14 +279,14 @@ sub _increment {
 
 sub _increment_mod {
     my ($self, $n) = @_;
-    $n = $$n if UNIVERSAL::isa($n, 'Time::Simple');
+    $n = $$n if UNIVERSAL::isa($n, ref($self));
 	$$self ++;
     return $self;
 }
 
 sub _decrement {
     my ($self, $n, $reverse) = @_;
-    $n = $$n if UNIVERSAL::isa($n, 'Time::Simple');
+    $n = $$n if UNIVERSAL::isa($n, ref($self));
 	my $copy = $self->_copy;
     $$copy -= $n;
     return $copy;
@@ -294,14 +294,14 @@ sub _decrement {
 
 sub _decrement_mod {
     my ($self, $n, $reverse) = @_;
-    $n = $$n if UNIVERSAL::isa($n, 'Time::Simple');
+    $n = $$n if UNIVERSAL::isa($n, ref($self));
 	$$self --;
 	return $self;
 }
 
 sub _add {
     my ($self, $n, $reverse) = @_;
-    if (UNIVERSAL::isa($n, 'Time::Simple')) {
+    if (UNIVERSAL::isa($n, ref($self))) {
 		my $s = ($n->hour * 60 * 60)
 			+ ($n->minute * 60)
 			+ $n->seconds;
@@ -314,7 +314,7 @@ sub _add {
 
 sub _subtract {
     my ($self, $n, $reverse) = @_;
-    if (UNIVERSAL::isa($n, 'Time::Simple')) {
+    if (UNIVERSAL::isa($n, ref($self))) {
         my $copy = $self->_copy;
         my $diff = $$copy - $$n;
         # $diff /= 86400;
@@ -330,7 +330,7 @@ sub _subtract {
 
 sub _compare {
     my ($self, $x, $reverse) = @_;
-    $x = Time::Simple->new($x) unless UNIVERSAL::isa($x, 'Time::Simple');
+    $x = ref($self)->new($x) unless UNIVERSAL::isa($x, ref($self));
     my $c = (int(${$self}) <=> int(${$x}));
     return $reverse ? -$c : $c;
 }
@@ -340,7 +340,7 @@ sub _compare {
 sub _multiply {
     my ($self, $n, $reverse) = @_;
 
-    if (UNIVERSAL::isa($n, 'Time::Simple')) {
+    if (UNIVERSAL::isa($n, ref($self))) {
 		Carp::cluck "Cannot multiply a time by a time, only a time by a number.";
 	}
 
@@ -348,13 +348,13 @@ sub _multiply {
 	my $ss = $self->total_seconds;
 	$ss *= $n;
 	my @hms = _mktime_seconds($ss);
-	return Time::Simple->new( @hms );
+	return ref($self)->new( @hms );
 }
 
 sub _divide {
     my ($self, $n, $reverse) = @_;
 
-    if (UNIVERSAL::isa($n, 'Time::Simple')) {
+    if (UNIVERSAL::isa($n, ref($self) )) {
 		Carp::cluck "Cannot multiply a time by a time, only a time by a number.";
 	}
 
@@ -364,7 +364,7 @@ sub _divide {
 
 	# Convert return value to time
 	my @hms = _mktime_seconds($return);
-	return Time::Simple->new( @hms );
+	return ref($self)->new( @hms );
 }
 
 1;

@@ -1,5 +1,9 @@
 Revision history for Perl extension Time::Simple.
 
+0.06	April 2011
+	- Removed hard-coded referenes to class,
+	  https://rt.cpan.org/Ticket/Display.html?id=67558&results=ecfdaeab7ba9d18e6f207609f426f7dd
+
 0.055 - 0.0552 February 2011
 	- Tests updated for CPAN Testers
 
